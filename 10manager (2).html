@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SAIL - Super Admin Access</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #001f3f; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 350px; text-align: center; }
+        .logo { font-size: 32px; font-weight: 900; color: #001f3f; margin-bottom: 10px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn-auth { width: 100%; padding: 15px; background: #0074d9; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .btn-auth:hover { background: #0056b3; }
+        .warning { color: red; font-size: 12px; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <div class="logo">SAIL COMMAND</div>
+    <p style="color: #666; font-size: 14px;">Super Admin Authorization Only</p>
+    
+    <input type="text" id="adminName" placeholder="Full Name">
+    <input type="password" id="adminPass" placeholder="Security Password">
+    
+    <div id="error" class="warning">Access Denied: Invalid Credentials</div>
+    
+    <button class="btn-auth" onclick="verifyOswald()">Unlock Dashboard</button>
+</div>
+
+<script>
+    function verifyOswald() {
+        const inputName = document.getElementById('adminName').value;
+        const inputPass = document.getElementById('adminPass').value;
+
+        // THE SECURITY CHECK FOR OSWALD
+        const superName = "Oswald Kingsley Bilson";
+        const superPass = "p!nc0deStr0ng!";
+
+        if (inputName === superName && inputPass === superPass) {
+            alert("Identity Verified. Welcome, Mr. Bilson.");
+            // Store that Oswald is logged in
+            localStorage.setItem("isAdmin", "true");
+            localStorage.setItem("adminUser", superName);
+            
+            // Move to the dashboard where you approve others
+            window.location.href = "admin_approval.html"; 
+        } else {
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('adminPass').value = "";
+        }
+    }
+</script>
+
+</body>
+</html>

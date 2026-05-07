@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAIL - Driver Dashboard</title>
+    <link rel="stylesheet" href="https://unpkg.com" />
+    <style>
+        :root { --dark: #001f3f; --blue: #0074d9; --green: #2ecc40; --red: #ff4136; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; overflow: hidden; background: #f4f7f6; }
+        
+        #map { height: 100vh; width: 100%; z-index: 1; }
+
+        /* Sidebar with Earnings */
+        .side-panel {
+            position: fixed; top: 20px; left: 20px; z-index: 1000;
+            width: 280px; background: white; border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); padding: 20px;
+        }
+        
+        .profile-header { border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; margin-bottom: 15px; }
+        .stat-box { display: flex; justify-content: space-between; margin-top: 12px; }
+        .stat-label { color: #666; font-size: 14px; }
+        .stat-val { font-weight: bold; color: var(--dark); font-size: 16px; }
+
+        /* Bottom UI for the "Go Online" Button */
+        .bottom-ui {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            z-index: 1000; width: 90%; max-width: 400px;
+        }
+        .status-card {
+            background: white; border-radius: 20px; padding: 20px;
+            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .btn-go-online {
+            width: 100%; padding: 18px; border: none; border-radius: 12px;
+            font-size: 20px; font-weight: bold; cursor: pointer; color: white;
+            background: var(--green); transition: 0.3s; text-transform: uppercase;
+        }
+        .btn-go-online:hover { background: #27ae60; transform: translateY(-2px); }
+        .btn-go-online:active { transform: translateY(0); }
+
+        #status-indicator { font-size: 13px; margin-bottom: 10px; font-weight: bold; color: #888; }
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <!-- Earnings & Profile Panel -->
+    <div class="side-panel">
+        <div class="profile-header">
+            <h3 style="margin:0; color: var(--dark);">Captain John</h3>
+            <span style="font-size: 11px; background: #eee; padding: 2px 8px; border-radius: 10px;">ID: SAIL-0092</span>
+        </div>
+        
+        <div class="stat-box">
+            <span class="stat-label">Earnings Today</span>
+            <span class="stat-val">GH₵ 142.50</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-label">Active Hours</span>
+            <span class="stat-val">5.2 hrs</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-label">Trips</span>
+            <span class="stat-val">8</span>
+        </div>
+    </div>
+
+    <!-- Go Online Action Area -->
+    <div class="bottom-ui">
+        <div class="status-card">
+            <div id="status-indicator">OFFLINE</div>
+            <button class="btn-go-online" onclick="goLiveAndRedirect()">GO ONLINE</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com"></script>
+    <script>
+        // Initialize Map
+        const map = L.map('map', { zoomControl: false }).setView([5.6037, -0.1870], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© SAIL Technologies'
+        }).addTo(map);
+
+        function goLiveAndRedirect() {
+            const statusLabel = document.getElementById('status-indicator');
+            statusLabel.innerText = "STARTING GPS...";
+            statusLabel.style.color = "#2ecc40";
+
+            if ("geolocation" in navigator) {
+                // 1. Capture location for Admin tracking
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    const data = {
+                        lat: pos.coords.latitude,
+                        lng: pos.coords.longitude,
+                        online: true,
+                        time: Date.now()
+                    };
+
+                    // 2. Save to localStorage for the Admin map to pick up
+                    localStorage.setItem('driver_location', JSON.stringify(data));
+
+                    // 3. ENCODED DESTINATION: Redirect to 9driver.html
+                    window.location.href = "9 driver.html";
+
+                }, (err) => {
+                    alert("Please enable GPS to go online.");
+                    statusLabel.innerText = "GPS ERROR";
+                    statusLabel.style.color = "red";
+                }, { enableHighAccuracy: true });
+            } else {
+                alert("Geolocation not supported.");
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAIL - Verification</title>
+    <style>
+        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; height: 100%; background: #001f3f; display: flex; justify-content: center; align-items: center; }
+        .card { background: white; padding: 40px; width: 380px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); text-align: center; }
+        .logo { font-size: 42px; font-weight: 800; color: #001f3f; margin-bottom: 5px; letter-spacing: 2px; }
+        .tagline { color: #666; font-size: 14px; margin-bottom: 30px; }
+        
+        h4 { color: #001f3f; margin-bottom: 10px; font-size: 16px; text-transform: uppercase; }
+        .method-box { display: flex; gap: 10px; margin-bottom: 30px; }
+        .method-btn { flex: 1; padding: 12px; border: 2px solid #0074d9; border-radius: 8px; color: #0074d9; font-weight: bold; cursor: pointer; transition: 0.3s; background: white; }
+        .method-btn:hover, .method-btn.active { background: #0074d9; color: white; }
+
+        /* OTP Input Boxes */
+        .otp-inputs { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; }
+        .otp-field { width: 50px; height: 60px; border: 2px solid #ddd; border-radius: 8px; text-align: center; font-size: 24px; font-weight: bold; color: #001f3f; background: #f9f9f9; }
+        .otp-field:focus { border-color: #0074d9; outline: none; background: white; }
+
+        .btn-blue { width: 100%; padding: 16px; background-color: #0074d9; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .btn-blue:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        .resend-text { font-size: 13px; color: #888; margin-top: 20px; }
+        .resend-link { color: #0074d9; cursor: pointer; font-weight: bold; text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="logo">SAIL</div>
+        <div class="tagline">Secure Identity Verification</div>
+
+        <h4>Choose Medium</h4>
+        <div class="method-box">
+            <button class="method-btn" onclick="sendOTP('Email', this)">EMAIL</button>
+            <button class="method-btn" onclick="sendOTP('Phone', this)">PHONE</button>
+        </div>
+
+        <div id="otp-section" style="display:none;">
+            <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Enter the 4-digit code sent to your <span id="chosen-method">...</span></p>
+            <div class="otp-inputs">
+                <input type="text" class="otp-field" maxlength="1" oninput="moveNext(this, 'otp2')" id="otp1">
+                <input type="text" class="otp-field" maxlength="1" oninput="moveNext(this, 'otp3')" id="otp2">
+                <input type="text" class="otp-field" maxlength="1" oninput="moveNext(this, 'otp4')" id="otp3">
+                <input type="text" class="otp-field" maxlength="1" oninput="validateOTP()" id="otp4">
+            </div>
+
+            <button class="btn-blue" id="verifyBtn" onclick="checkCode()">Verify & Continue</button>
+            
+            <p class="resend-text">Didn't get a code? <span class="resend-link" onclick="location.reload()">Resend</span></p>
+        </div>
+    </div>
+
+    <script>
+        const CORRECT_OTP = "1234"; // Demo Code
+
+        function sendOTP(method, element) {
+            // UI Toggle
+            document.querySelectorAll('.method-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+            
+            // Show OTP section
+            document.getElementById('otp-section').style.display = 'block';
+            document.getElementById('chosen-method').innerText = method;
+            
+            alert(`Success! An automatic OTP has been sent via ${method}. (Demo Code: 1234)`);
+            document.getElementById('otp1').focus();
+        }
+
+        function moveNext(current, nextId) {
+            if (current.value.length >= 1) {
+                document.getElementById(nextId).focus();
+            }
+        }
+
+        function checkCode() {
+            const val1 = document.getElementById('otp1').value;
+            const val2 = document.getElementById('otp2').value;
+            const val3 = document.getElementById('otp3').value;
+            const val4 = document.getElementById('otp4').value;
+            const enteredOTP = val1 + val2 + val3 + val4;
+
+            if (enteredOTP === CORRECT_OTP) {
+                alert("Verification Successful!");
+                window.location.href = "7driver.html";
+            } else {
+                alert("Incorrect Code. Please try again.");
+                // Reset fields
+                document.querySelectorAll('.otp-field').forEach(input => input.value = "");
+                document.getElementById('otp1').focus();
+            }
+        }
+
+        // Auto-validate on last digit
+        function validateOTP() {
+            const val4 = document.getElementById('otp4').value;
+            if(val4.length === 1) {
+                // Optional: trigger checkCode automatically
+            }
+        }
+    </script>
+</body>
+</html>

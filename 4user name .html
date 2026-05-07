@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>username- Setup Profile</title>
+    <style>
+        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; height: 100%; background: #001f3f; display: flex; justify-content: center; align-items: center; }
+        .card { background: white; padding: 40px; width: 360px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); text-align: center; }
+        .logo { font-size: 32px; font-weight: 800; color: #001f3f; margin-bottom: 5px; letter-spacing: 2px; }
+        .tagline { color: #666; font-size: 14px; margin-bottom: 25px; }
+        
+        .input-group { margin-bottom: 15px; text-align: left; }
+        label { display: block; font-size: 11px; font-weight: bold; color: #001f3f; margin-bottom: 5px; text-transform: uppercase; }
+        
+        input { 
+            width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 8px; 
+            box-sizing: border-box; font-size: 16px; background: #f9f9f9;
+        }
+
+        .btn-finish { 
+            width: 100%; padding: 16px; background-color: #0074d9; color: white; 
+            border: none; border-radius: 8px; font-size: 18px; font-weight: bold; 
+            cursor: pointer; margin-top: 15px;
+        }
+
+        .btn-finish:hover { background-color: #0056a3; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="logo">SAIL</div>
+        <div class="tagline">Set your identity for the voyage.</div>
+
+        <!-- SPACE 1: FULL NAME -->
+        <div class="input-group">
+            <label>Full Name</label>
+            <input type="text" id="fullname" placeholder="John Doe">
+        </div>
+
+        <!-- SPACE 2: USERNAME -->
+        <div class="input-group">
+            <label>Username</label>
+            <input type="text" id="username" placeholder="johndoe_24">
+        </div>
+
+        <!-- SPACE 3: PASSWORD -->
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="••••••••">
+        </div>
+
+        <button class="btn-finish" onclick="saveProfile()">Complete Profile</button>
+    </div>
+
+    <script>
+        function saveProfile() {
+            const name = document.getElementById('fullname').value;
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            if(!name || !user || !pass) {
+                alert("Please fill in all three fields to continue.");
+                return;
+            }
+
+            // In a prototype, we show success and move to the map
+            alert("Welcome aboard, " + name + "!");
+            window.location.href = "dashboard.html";
+        }
+    </script>
+
+</body>
+</html>

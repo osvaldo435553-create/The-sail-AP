@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> - Verify OTP</title>
+    <style>
+        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; height: 100%; background: #001f3f; display: flex; justify-content: center; align-items: center; }
+        .card { background: white; padding: 40px; width: 360px; border-radius: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); text-align: center; }
+        .otp-container { display: flex; justify-content: center; gap: 12px; margin: 25px 0; }
+        .otp-box { width: 55px; height: 65px; text-align: center; font-size: 28px; font-weight: bold; border: 2px solid #ddd; border-radius: 10px; background: #f9f9f9; color: #001f3f; }
+        .otp-box:focus { border-color: #0074d9; outline: none; background: #fff; }
+        .btn-blue { width: 100%; padding: 16px; background-color: #0074d9; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-bottom: 20px; }
+        .back-link { color: #0074d9; font-size: 14px; text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2 style="color:#001f3f; margin-top:0;">Verify Code</h2>
+        <p style="color: #666; font-size: 14px;">Enter your code to set up your profile.</p>
+
+        <div class="otp-container">
+            <input type="tel" class="otp-box" id="o1" maxlength="1" onkeyup="move(this, 'o2')">
+            <input type="tel" class="otp-box" id="o2" maxlength="1" onkeyup="move(this, 'o3')">
+            <input type="tel" class="otp-box" id="o3" maxlength="1" onkeyup="move(this, 'o4')">
+            <input type="tel" class="otp-box" id="o4" maxlength="1" onkeyup="move(this, '')">
+        </div>
+
+        <!-- The button that checks the logic -->
+        <button class="btn-blue" onclick="verifyCode()">Verify & Continue</button>
+
+        <a href="customer.html" class="back-link">Back to Login</a>
+    </div>
+
+    <script>
+        function move(current, nextId) {
+            current.value = current.value.replace(/[^0-9]/g, '');
+            if (current.value.length === 1 && nextId !== "") {
+                document.getElementById(nextId).focus();
+            }
+        }
+
+        function verifyCode() {
+            const enteredCode = document.getElementById('o1').value + 
+                               document.getElementById('o2').value + 
+                               document.getElementById('o3').value + 
+                               document.getElementById('o4').value;
+            
+            // THE SECURITY CHECK
+            const correctOTP = "1234"; // You can change this to any 4 numbers
+
+            if (enteredCode === correctOTP) {
+                // REDIRECT ONLY IF CORRECT
+                window.location.href = "username.html";
+            } else if (enteredCode.length < 4) {
+                alert("Please fill all 4 boxes.");
+            } else {
+                // STOPS THE USER IF WRONG
+                alert("Invalid OTP code. Please try again.");
+                // Clears the boxes for a new try
+                document.getElementById('o1').value = "";
+                document.getElementById('o2').value = "";
+                document.getElementById('o3').value = "";
+                document.getElementById('o4').value = "";
+                document.getElementById('o1').focus();
+            }
+        }
+    </script>
+</body>
+</html>

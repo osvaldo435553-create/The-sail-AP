@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Oswald's KYC Command Center</title>
+    <style>
+        body { font-family: sans-serif; padding: 40px; background: #f4f7f9; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #001f3f; padding-bottom: 20px; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border-left: 6px solid #d9534f; }
+        .btn-approve { background: #28a745; color: white; border: none; padding: 12px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-approve:hover { background: #218838; }
+        #empty-msg { color: #888; text-align: center; margin-top: 50px; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SAIL Operations Center</h1>
+        <div style="text-align: right;">
+            <div style="font-weight: bold; color: #001f3f;">Oswald Kingsley Bilson</div>
+            <div style="font-size: 12px; color: #666;">Super Admin Authorization</div>
+        </div>
+    </div>
+
+    <h3>Pending Admin Verifications</h3>
+    <div id="request-list">
+        <!-- Live Data will appear here -->
+    </div>
+    <div id="empty-msg">No pending requests at the moment, Sir.</div>
+
+    <script>
+        function loadRequests() {
+            const listContainer = document.getElementById('request-list');
+            const emptyMsg = document.getElementById('empty-msg');
+            const data = JSON.parse(localStorage.getItem('sail_pending_admins') || "[]");
+
+            if (data.length === 0) {
+                listContainer.innerHTML = "";
+                emptyMsg.style.display = "block";
+                return;
+            }
+
+            emptyMsg.style.display = "none";
+            listContainer.innerHTML = "";
+
+            data.forEach((app, index) => {
+                const card = `
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h2 style="margin: 0; color: #001f3f;">${app.name}</h2>
+                                <p style="margin: 5px 0; color: #666;">Email: ${app.email} | Applied: ${app.time}</p>
+                                <button style="font-size: 11px; margin-top: 5px;" onclick="alert('Viewing Secure ID for ${app.name}...')">View ID Document</button>
+                            </div>
+                            <button class="btn-approve" onclick="approveAdmin(${index}, '${app.name}')">Approve & Activate</button>
+                        </div>
+                    </div>
+                `;
+                listContainer.innerHTML += card;
+            });
+        }
+
+        function approveAdmin(index, name) {
+            if (confirm(`Authorize ${name} to access the SAIL Fleet Tracking system?`)) {
+                let data = JSON.parse(localStorage.getItem('sail_pending_admins'));
+                
+                // Remove from pending
+                data.splice(index, 1);
+                localStorage.setItem('sail_pending_admins', JSON.stringify(data));
+                
+                alert(`${name} has been successfully verified by Oswald.`);
+                loadRequests(); // Refresh the list
+            }
+        }
+
+        // Auto-load requests when Oswald opens the page
+        window.onload = loadRequests;
+    </script>
+</body>
+</html>

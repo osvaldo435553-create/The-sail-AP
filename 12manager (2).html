@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAIL Global Tracking - Oswald Kingsley Bilson</title>
+
+    <!-- 1. THE MAP STYLES (REQUIRED) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
+        
+        /* THE ACTUAL MAP BOX */
+        #map { height: 100vh; width: 100vw; z-index: 1; background: #e5e3df; }
+
+        /* ADMIN PANEL OVERLAY */
+        .admin-overlay {
+            position: absolute; top: 20px; left: 20px; z-index: 1000;
+            background: rgba(0, 31, 63, 0.95); color: white; padding: 25px;
+            border-radius: 12px; width: 280px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .logo { font-size: 28px; font-weight: 900; color: #7fdbff; }
+        .user-id { font-size: 11px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 8px; }
+        .stat { font-size: 14px; margin-bottom: 8px; display: flex; justify-content: space-between; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-overlay">
+        <div class="logo">SAIL</div>
+        <div class="user-id">SUPER ADMIN: Oswald Kingsley Bilson</div>
+        <div class="stat"><span>🚕 Online Captains:</span> <b>2</b></div>
+        <div class="stat"><span>👤 Active Riders:</span> <b>1</b></div>
+        <div style="font-size: 10px; color: #2ecc71; margin-top: 10px;">● LIVE GPS TRACKING ACTIVE</div>
+    </div>
+
+    <!-- THIS IS WHERE THE MAP APPEARS -->
+    <div id="map"></div>
+
+    <!-- 2. THE MAP ENGINE (REQUIRED) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // 3. START THE MAP (Set to Kumasi, Ghana)
+        var map = L.map('map', { zoomControl: false }).setView([6.6666, -1.6163], 14);
+
+        // Load the visual street tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© SAIL Fleet Tracking'
+        }).addTo(map);
+
+        // Define Icons for Captains and Riders
+        var carIcon = L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/3063/3063822.png',
+            iconSize: [35, 35]
+        });
+        
+        var riderIcon = L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/707/707675.png',
+            iconSize: [30, 30]
+        });
+
+        // Add Simulated Live Markers
+        L.marker([6.6680, -1.6150], {icon: carIcon}).addTo(map).bindPopup("Captain Joe (Moving)");
+        L.marker([6.6720, -1.6200], {icon: carIcon}).addTo(map).bindPopup("Captain Ama (Idle)");
+        L.marker([6.6620, -1.6120], {icon: riderIcon}).addTo(map).bindPopup("Rider: Kwame (Waiting)");
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>SAIL - Active Voyage</title>
+    
+    <!-- FIX 1: Explicitly load the CSS with a fallback check -->
+    <link rel="stylesheet" href="https://unpkg.com" />
+
+    <style>
+        /* FIX 2: Essential CSS for map visibility */
+        html, body { 
+            height: 100%; 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; 
+            background: #001f3f; /* Deep blue background to see if map is missing */
+        }
+        
+        #map { 
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 100vh; 
+            width: 100vw; 
+            background: #cbdcfc; /* Light blue ensures the container is visible */
+            z-index: 1;
+        }
+
+        .ui-overlay {
+            position: fixed; 
+            bottom: 25px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            z-index: 1000; 
+            width: 90%; 
+            max-width: 380px;
+            background: white; 
+            border-radius: 15px; 
+            padding: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4); 
+            text-align: center;
+        }
+
+        .distance-display {
+            display: flex; 
+            justify-content: space-around;
+            margin-bottom: 10px; 
+            font-size: 13px; 
+            color: #444;
+            border-bottom: 1px solid #eee; 
+            padding-bottom: 8px;
+            font-family: sans-serif;
+        }
+        .distance-display span { font-weight: bold; color: #0074d9; }
+
+        .btn-start {
+            width: 100%; 
+            padding: 16px; 
+            background: #2ecc40; 
+            color: white;
+            border: none; 
+            border-radius: 10px; 
+            font-weight: bold; 
+            font-size: 1.1em;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- THE MAP CONTAINER -->
+    <div id="map"></div>
+
+    <!-- UI OVERLAY -->
+    <div class="ui-overlay">
+        <div class="distance-display">
+            <div>To Rider: <span id="dist-rider">-- km</span></div>
+            <div>To Dest: <span id="dist-dest">-- km</span></div>
+        </div>
+        <div style="margin-bottom:10px; font-family: sans-serif;">
+            <strong>Voyage Status:</strong> <span id="status" style="color: #666;">Ready</span>
+        </div>
+        <button class="btn-start" id="vBtn" onclick="startVoyage()">START VOYAGE</button>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com"></script>
+
+    <script>
+        // TARGET LOCATIONS
+        const riderLoc = [5.6250, -0.1730];
+        const destLoc = [5.5560, -0.1960];
+
+        // 1. Initialize Map with a small delay to ensure CSS is applied
+        var map;
+        function initMap() {
+            map = L.map('map', {zoomControl: false}).setView([5.6037, -0.1870], 13);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; SAIL'
+            }).addTo(map);
+
+            // FIX 3: Force redraw
+            setTimeout(() => { 
+                map.invalidateSize(); 
+                window.dispatchEvent(new Event('resize'));
+            }, 400);
+        }
+
+        let driverMarker;
+        let isVoyage = false;
+
+        function startVoyage() {
+            isVoyage = true;
+            document.getElementById('status').innerText = "VOYAGE ACTIVE";
+            document.getElementById('status').style.color = "#0074d9";
+            document.getElementById('vBtn').style.background = "#0074d9";
+            document.getElementById('vBtn').innerText = "END VOYAGE";
+
+            // Communicate with 12manager.html
+            const record = {
+                rider: "Samuel A.",
+                status: "ACTIVE",
+                time: new Date().toLocaleTimeString()
+            };
+            localStorage.setItem('active_voyage', JSON.stringify(record));
+        }
+
+        // Live Tracking Logic
+        function trackLocation() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.watchPosition((pos) => {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    const driverLatLng = L.latLng(lat, lng);
+
+                    if (!driverMarker) {
+                        driverMarker = L.marker([lat, lng]).addTo(map).bindPopup("Driver (Live)");
+                    } else {
+                        driverMarker.setLatLng([lat, lng]);
+                    }
+
+                    // Calculate Distances
+                    const dRider = (driverLatLng.distanceTo(L.latLng(riderLoc)) / 1000).toFixed(2);
+                    const dDest = (driverLatLng.distanceTo(L.latLng(destLoc)) / 1000).toFixed(2);
+                    
+                    document.getElementById('dist-rider').innerText = dRider + " km";
+                    document.getElementById('dist-dest').innerText = dDest + " km";
+
+                    if(isVoyage) map.flyTo([lat, lng], 17);
+                    else map.panTo([lat, lng]);
+
+                }, (err) => {
+                    console.error("GPS Error:", err);
+                    if(err.code == 1) alert("Please allow Location Access in your browser settings.");
+                }, {enableHighAccuracy: true});
+            }
+        }
+
+        // Launch everything
+        window.onload = function() {
+            initMap();
+            trackLocation();
+        };
+    </script>
+</body>
+</html>

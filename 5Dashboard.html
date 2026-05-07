@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAIL - Live Dashboard</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; }
+        
+        #map { 
+            height: 100vh !important; 
+            width: 100vw !important; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            z-index: 1; 
+            background-color: #e5e3df; 
+        }
+
+        /* Updated Nav to handle the menu position */
+        .top-nav { 
+            position: absolute; 
+            top: 0; 
+            width: 100%; 
+            z-index: 1000; 
+            background: #001f3f; 
+            color: white; 
+            padding: 15px 25px; 
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { font-weight: 800; font-size: 22px; color: #7fdbff; letter-spacing: 1px; }
+
+        /* --- STYLING FOR THE NOTICEABLE MENU BARS --- */
+        .menu-link {
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .bar {
+            width: 100%;
+            height: 3px;
+            background-color: white; /* Makes it noticeable on navy blue */
+            border-radius: 5px;
+        }
+
+        .booking-card { 
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); 
+            width: 90%; max-width: 400px; z-index: 1000; background: white; 
+            border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); 
+        }
+        
+        input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .btn-sail { width: 100%; background: #001f3f; color: white; padding: 18px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="top-nav">
+        <div class="logo">SAIL</div>
+        
+        <!-- THE VISIBLE MENU LINK -->
+        <a href="profile.html" class="menu-link">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </a>
+    </div>
+
+    <div id="map"></div>
+
+    <div class="booking-card">
+        <input type="text" id="p_up" placeholder="📍 Pickup Location">
+        <input type="text" id="d_off" placeholder="🏁 Destination">
+        <button class="btn-sail" onclick="handleSetSail()">SET SAIL</button>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        var map = L.map('map', { zoomControl: false }).setView([6.6666, -1.6163], 13);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        window.onload = function() {
+            setTimeout(function() {
+                map.invalidateSize();
+            }, 500); 
+        };
+
+        function handleSetSail() {
+            const dest = document.getElementById('d_off').value;
+            if(!dest) {
+                alert("Please enter a destination first!");
+                return;
+            }
+            map.locate({setView: true, maxZoom: 16});
+        }
+
+        map.on('locationfound', function(e) {
+            L.marker(e.latlng).addTo(map).bindPopup("You are here").openPopup();
+            document.getElementById('p_up').value = "My Current Location";
+        });
+
+        map.on('locationerror', function() {
+            alert("Location access denied. Please enter pickup manually.");
+        });
+    </script>
+
+</body>
+</html>
